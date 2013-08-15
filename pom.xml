@@ -24,12 +24,10 @@
         <artifactId>accumulo-project</artifactId>
         <version>1.6.0-SNAPSHOT</version>
     </parent>
-
     <groupId>org.apache.accumulo</groupId>
     <artifactId>accumulo-hive-storage-handler_2.0</artifactId>
     <version>1.6.0-SNAPSHOT</version>
     <name>hive-storage-handler</name>
-
 
     <dependencies>
         <dependency>
