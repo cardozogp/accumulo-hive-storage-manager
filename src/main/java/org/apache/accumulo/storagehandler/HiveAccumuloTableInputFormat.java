@@ -23,6 +23,7 @@ import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.TaskAttemptID;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.util.StringUtils;
 
@@ -62,9 +63,9 @@ public class HiveAccumuloTableInputFormat
             if (colQualFamPairs.size() + incForRowID < readColIds.size())
                 throw new IOException("Number of colfam:qual pairs + rowkey (" + (colQualFamPairs.size() + incForRowID) + ")" +
                         " numbers less than the hive table columns. (" + readColIds.size() + ")");
+           
+            Path[] tablePaths = FileInputFormat.getInputPaths(job);
 
-            JobContext context = new JobContext(job.getConfiguration(), job.getJobID());
-            Path[] tablePaths = FileInputFormat.getInputPaths(context);
             List<org.apache.hadoop.mapreduce.InputSplit> splits = super.getSplits(job); //get splits from Accumulo.
             InputSplit[] newSplits = new InputSplit[splits.size()];
             for (int i = 0; i < splits.size(); i++) {
@@ -135,13 +136,13 @@ public class HiveAccumuloTableInputFormat
                         " numbers less than the hive table columns. (" + readColIds.size() + ")");
 
 
-            //for use to initialize final record reader.
-            final TaskAttemptContext tac =
-                    new TaskAttemptContext(job.getConfiguration(), new TaskAttemptID()) {
+            //for use to initialize final record reader.           
+  	    final TaskAttemptContext tac =
+                    new TaskAttemptContextImpl(job.getConfiguration(), new TaskAttemptID()) { 	    
 
                         @Override
                         public void progress() {
-                            reporter.progress();;
+                            reporter.progress();
                         }
                     };
             final org.apache.hadoop.mapreduce.RecordReader
