@@ -262,9 +262,17 @@ public class HiveAccumuloTableInputFormat
         if (instance instanceof MockInstance) {
             setMockInstance(job, instanceId);
         }  else {
-            setZooKeeperInstance(job, instanceId, zookeepers);
+            try {            
+                setZooKeeperInstance(job, instanceId, zookeepers);
+            } catch (IllegalStateException e) {
+               //Instance info can only be set once per job; it has already been configured
+            }
         }
-        setConnectorInfo(job, user, new PasswordToken(pass.getBytes()));
+
+        if(!isConnectorInfoSet(job)) {
+      	    setConnectorInfo(job, user, new PasswordToken(pass.getBytes()));
+	}
+
         setInputTableName(job, tableName);
         setScanAuthorizations(job, connector.securityOperations().getUserAuthorizations(user));
         List<IteratorSetting> iterators = predicateHandler.getIterators(conf); //restrict with any filters found from WHERE predicates.
