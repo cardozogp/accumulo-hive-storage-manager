@@ -3,6 +3,7 @@ package org.apache.accumulo.storagehandler;
 import com.google.common.collect.Lists;
 import org.apache.accumulo.core.client.*;
 import org.apache.accumulo.core.client.mapreduce.AccumuloRowInputFormat;
+import org.apache.accumulo.core.client.mapreduce.RangeInputSplit;
 import org.apache.accumulo.core.client.mock.MockInstance;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.data.Key;
