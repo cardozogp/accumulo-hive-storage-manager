@@ -22,11 +22,11 @@
     <parent>
         <groupId>org.apache.accumulo</groupId>
         <artifactId>accumulo-project</artifactId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.6.0</version>
     </parent>
     <groupId>org.apache.accumulo</groupId>
     <artifactId>accumulo-hive-storage-handler_2.0</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.6.0</version>
     <name>hive-storage-handler</name>
 
     <dependencies>
@@ -75,22 +75,22 @@
         <dependency>
             <groupId>org.apache.accumulo</groupId>
             <artifactId>accumulo-core</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.accumulo</groupId>
             <artifactId>accumulo-fate</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.accumulo</groupId>
             <artifactId>accumulo-start</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.accumulo</groupId>
             <artifactId>accumulo-trace</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -149,6 +149,25 @@
                         </sortDependencies>
                     </configuration>
                 </plugin>
+            
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <configuration>
+                      <excludes>
+                        <exclude>src/main/javadoc/**/*.uxf</exclude>
+                        <exclude>src/main/java/**</exclude>
+                        <exclude>src/test/java/**</exclude>
+                        <exclude>src/test/hql/**</exclude>
+                        <exclude>src/test/repository/**</exclude>
+                        <exclude>src/test/resources/**/*.txt</exclude>
+                        <exclude>src/test/resources/**/*.cnd</exclude>
+                        <exclude>repository/**</exclude>
+                        <exclude>*.log</exclude>
+                        <exclude>*.md</exclude>
+                        </excludes>
+                    </configuration>
+               </plugin>
             </plugins>
         </pluginManagement>
     </build>
