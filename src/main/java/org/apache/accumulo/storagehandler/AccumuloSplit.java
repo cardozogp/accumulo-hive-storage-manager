@@ -19,6 +19,7 @@
 package org.apache.accumulo.storagehandler;
 
 import org.apache.accumulo.core.client.mapreduce.InputFormatBase.*;
+import org.apache.accumulo.core.client.mapreduce.RangeInputSplit;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapred.InputSplit;
