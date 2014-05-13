@@ -23,7 +23,6 @@ import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.TaskAttemptID;
 import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.util.StringUtils;
 
@@ -138,7 +137,7 @@ public class HiveAccumuloTableInputFormat
 
             //for use to initialize final record reader.           
   	    final TaskAttemptContext tac =
-                    new TaskAttemptContextImpl(job.getConfiguration(), new TaskAttemptID()) { 	    
+                    new TaskAttemptContext(job.getConfiguration(), new TaskAttemptID()) { 	    
 
                         @Override
                         public void progress() {
