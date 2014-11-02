@@ -14,7 +14,7 @@ import org.apache.hadoop.hive.serde2.io.DoubleWritable;
 import org.apache.hadoop.hive.ql.index.IndexPredicateAnalyzer;
 import org.apache.hadoop.hive.ql.index.IndexSearchCondition;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
-import org.apache.hadoop.hive.ql.plan.ExprNodeDesc;
+import org.apache.hadoop.hive.ql.plan.*;
 import org.apache.hadoop.hive.ql.plan.TableScanDesc;
 import org.apache.hadoop.hive.ql.udf.UDFLike;
 import org.apache.hadoop.hive.ql.udf.generic.*;
@@ -216,7 +216,7 @@ public class AccumuloPredicateHandler {
         String filteredExprSerialized = conf.get(TableScanDesc.FILTER_EXPR_CONF_STR);
         if(filteredExprSerialized == null)
             return sConditions;
-        ExprNodeDesc filterExpr = Utilities.deserializeExpression(filteredExprSerialized, conf);
+        ExprNodeDesc filterExpr = Utilities.deserializeExpression(filteredExprSerialized/*, conf*/);
         IndexPredicateAnalyzer analyzer = newAnalyzer(conf);
         ExprNodeDesc residual = analyzer.analyzePredicate(filterExpr, sConditions);
         if(residual != null)
@@ -232,8 +232,6 @@ public class AccumuloPredicateHandler {
      * @return DecomposedPredicate containing translated search conditions the analyzer can support.
      */
     public DecomposedPredicate decompose(JobConf conf, ExprNodeDesc desc) {
-
-
         IndexPredicateAnalyzer analyzer = newAnalyzer(conf);
         List<IndexSearchCondition> sConditions = new ArrayList<IndexSearchCondition>();
         ExprNodeDesc residualPredicate = analyzer.analyzePredicate(desc, sConditions);
@@ -244,7 +242,7 @@ public class AccumuloPredicateHandler {
         }
         DecomposedPredicate decomposedPredicate  = new DecomposedPredicate();
         decomposedPredicate.pushedPredicate = analyzer.translateSearchConditions(sConditions);
-        decomposedPredicate.residualPredicate = residualPredicate;
+        decomposedPredicate.residualPredicate = (ExprNodeGenericFuncDesc)residualPredicate;
         return decomposedPredicate;
     }
 

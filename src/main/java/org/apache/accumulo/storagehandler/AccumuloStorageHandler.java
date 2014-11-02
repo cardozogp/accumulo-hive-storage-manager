@@ -54,6 +54,10 @@ public class AccumuloStorageHandler
         return connector;
     }
 
+public void configureJobConf(TableDesc tableDesc, JobConf jobConf) {
+}
+
+
     /**
      *
      * @param desc table description
@@ -243,3 +247,5 @@ public class AccumuloStorageHandler
         }
     }
 }
+
+

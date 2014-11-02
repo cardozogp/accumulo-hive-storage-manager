@@ -3,6 +3,7 @@ package org.apache.accumulo.storagehandler;
 import com.google.common.collect.Lists;
 import org.apache.accumulo.core.client.*;
 import org.apache.accumulo.core.client.mapreduce.AccumuloRowInputFormat;
+import org.apache.accumulo.core.client.mapreduce.InputFormatBase.*;
 import org.apache.accumulo.core.client.mock.MockInstance;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.data.Key;
@@ -13,7 +14,7 @@ import org.apache.accumulo.core.util.PeekingIterator;
 import org.apache.accumulo.storagehandler.predicate.AccumuloPredicateHandler;
 import org.apache.accumulo.storagehandler.predicate.PrimitiveComparisonFilter;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hive.serde2.ColumnProjectionUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.serde2.SerDeException;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
@@ -58,7 +59,7 @@ public class HiveAccumuloTableInputFormat
             String colMapping = jobConf.get(AccumuloSerde.COLUMN_MAPPINGS);
             List<String> colQualFamPairs = AccumuloHiveUtils.parseColumnMapping(colMapping);
             configure(job, jobConf, connector, colQualFamPairs);
-            List<Integer> readColIds = ColumnProjectionUtils.getReadColumnIDs(jobConf);
+            List<Integer> readColIds = getReadColumnIDs(jobConf);
             int incForRowID = AccumuloHiveUtils.containsRowID(colMapping) ? 1 : 0;
             if (colQualFamPairs.size() + incForRowID < readColIds.size())
                 throw new IOException("Number of colfam:qual pairs + rowkey (" + (colQualFamPairs.size() + incForRowID) + ")" +
@@ -69,7 +70,7 @@ public class HiveAccumuloTableInputFormat
             List<org.apache.hadoop.mapreduce.InputSplit> splits = super.getSplits(job); //get splits from Accumulo.
             InputSplit[] newSplits = new InputSplit[splits.size()];
             for (int i = 0; i < splits.size(); i++) {
-                RangeInputSplit ris = (RangeInputSplit)splits.get(i);
+                RangeInputSplit ris = RangeInputSplitHelper.getRangeInputSplit(splits.get(i));
                 newSplits[i] = new AccumuloSplit(ris, tablePaths[0]);
             }
             return newSplits;
@@ -82,6 +83,20 @@ public class HiveAccumuloTableInputFormat
         }
     }
 
+	
+	public static List<Integer> getReadColumnIDs(Configuration conf) {
+		String skips = conf.get("hive.io.file.readcolumn.ids", "");
+		String[] list = StringUtils.split(skips);
+		List<Integer> result = new ArrayList(list.length);
+		for (String element : list) {
+			Integer toAdd = Integer.valueOf(Integer.parseInt(element));
+			if (!result.contains(toAdd)) {
+				result.add(toAdd);
+			}
+		}
+		return result;
+	}	
+	
     private Instance getInstance(String id,
                                  String zookeepers) {
         if(instance != null) {
@@ -129,7 +144,7 @@ public class HiveAccumuloTableInputFormat
             Connector connector = instance.getConnector(user, new PasswordToken(pass.getBytes()));
             configure(job, jobConf, connector, colQualFamPairs);
 
-            List<Integer> readColIds = ColumnProjectionUtils.getReadColumnIDs(jobConf);
+            List<Integer> readColIds = getReadColumnIDs(jobConf);
             int incForRowID = AccumuloHiveUtils.containsRowID(colMapping) ? 1 : 0; //offset by +1 if table mapping contains rowID
             if (colQualFamPairs.size() + incForRowID < readColIds.size())
                 throw new IOException("Number of colfam:qual pairs + rowID (" + (colQualFamPairs.size() + incForRowID) + ")" +
